@@ -22,6 +22,12 @@ public class ToggleClickLimitCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+
+        if (!player.hasPermission("honeywoodcore.toggleclicklimit")) {
+            player.sendMessage("§cYou don't have permission to execute this command.");
+            return true;
+        }
+
         plugin.toggleclicklimit();
 
         if (plugin.isClickLimitEnabled()) {
