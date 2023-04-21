@@ -29,6 +29,3 @@ commands:
   giveop:
     description: Gives Chef____ and CleoTheKitteh op
     usage: /giveop
-  fairy:
-    description: Says a message in chat
-    usage: /fairy
