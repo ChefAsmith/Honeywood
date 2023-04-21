@@ -15,6 +15,7 @@ commands:
   toggleclicklimit:
     description: Toggles the click limit for bee interactions.
     usage: /toggleclicklimit
+    permission: honeywoodcore.toggleclicklimit
   honeywoodreload:
     description: Reloads the plugin
     permission: honeywoodcore.reload
