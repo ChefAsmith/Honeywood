@@ -37,7 +37,7 @@ public class HoneywoodCore extends JavaPlugin implements Listener {
         reloadConfig();
         getLogger().info("Config loaded: pollen_chance = " + getConfig().getDouble("pollen_chance"));
 
-        Pollen pollenInstance = new Pollen(Material.YELLOW_DYE, 1); // Pass the required arguments
+        Pollen pollenInstance = new Pollen(Material.SUNFLOWER, 1); // Pass the required arguments
         pollenInstance.registerCustomItem(this);
 
         // Register custom items
@@ -50,8 +50,11 @@ public class HoneywoodCore extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("givenecklace")).setExecutor(new GiveNecklaceCommand());
         Objects.requireNonNull(getCommand("givearmband")).setExecutor(new GiveArmBandCommand());
         Objects.requireNonNull(getCommand("giveop")).setExecutor(new GiveOpCommand());
-
-
+        Objects.requireNonNull(getCommand("setspawn")).setExecutor(new SpawnCommand(this));
+        Objects.requireNonNull(getCommand("spawn")).setExecutor(new SpawnCommand(this));
+        Objects.requireNonNull(getCommand("translocate")).setExecutor(new TranslocateCommand(this));
+        Objects.requireNonNull(getCommand("trash")).setExecutor(new TrashCommand(this));
+        Objects.requireNonNull(getCommand("trash")).setExecutor(new TrashCommand(this));
 
         PluginCommand givePollenCommand = getCommand("givepollen");
         if (givePollenCommand != null) {
