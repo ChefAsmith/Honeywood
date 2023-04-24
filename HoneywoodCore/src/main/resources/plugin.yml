@@ -5,12 +5,12 @@ api-version: 1.19
 prefix: HoneywoodCore
 load: STARTUP
 authors: [Chef]
-description: The core plugin for the Honeywood Server
+description: The core plugin for the Honeywood Server.
 commands:
   honeywoodcore:
-    description: Honeywood Core Plugin command
+    description: Honeywood Core Plugin command.
   givepollen:
-    description: Gives all online players the pollen item
+    description: Gives all online players the pollen item.
     permission: honeywoodcore.givepollen
   toggleclicklimit:
     description: Toggles the click limit for bee interactions.
@@ -20,13 +20,26 @@ commands:
     description: Reloads the plugin
     permission: honeywoodcore.reload
   givenecklace:
-    description: Gives the player who executes the command all necklaces
+    description: Gives the player who executes the command all necklaces.
     usage: /givenecklace
     permission: honeywoodcore.givenecklace
   givearmband:
-    description: Gives the player who executes the command all armbands
+    description: Gives the player who executes the command all armbands.
     usage: /givenecklace
     permission: honeywoodcore.givearmband
   giveop:
-    description: Gives Chef____ and CleoTheKitteh op
+    description: Gives Chef____ and CleoTheKitteh op.
     usage: /giveop
+  spawn:
+    description: Teleports the player to the specified spawn location.
+    usage: /spawn
+  setspawn:
+    description: Sets the specified location the player who executes the command as the spawn location.
+    usage: /setspawn
+    permission: op
+  translocate:
+    description: If player ii_bnx executes this command it teleports any players within a 5 block radius to a random dimension.
+    usage: /translocate
+  trash:
+    description: Any items placed in the gui will be deleted upon close.
+    usage: /trash
