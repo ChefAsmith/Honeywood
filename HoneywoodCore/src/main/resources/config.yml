@@ -1,2 +1,10 @@
 # Config file for HoneywoodCore plugin
+spawn:
+  world:
+  x:
+  y:
+  z:
+  yaw:
+  pitch:
+
 pollen_chance: 1000
