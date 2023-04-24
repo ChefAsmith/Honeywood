@@ -43,12 +43,9 @@ public class Pollen implements Listener {
 
         // Create a new ItemStack for your custom item
         ItemStack item = new ItemStack(Material.SUNFLOWER);
-
-        // Set the display name of the item to "Pollen" with an invisible Unicode character
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName("§6§l✴" + "Pollen" + "✴");
-            // Set the CustomItemModelData value to a unique integer
             meta.setCustomModelData(1);
             item.setItemMeta(meta);
         }
