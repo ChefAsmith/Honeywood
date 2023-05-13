@@ -1,0 +1,3 @@
+ErrorNotPlayer: '§6§lHoneywood: §cOnly players can use this command.'
+ErrorNoPermission: '§6§lHoneywood: §cYou do not have permission to use this command. §rPlease retry when you have this permission: '
+ErrorIncorrectUsage: '§6§lHoneywood: §cYou have executed this command wrong, the actual usage is §r§l '

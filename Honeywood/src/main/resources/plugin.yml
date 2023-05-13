@@ -1,0 +1,43 @@
+name: Honeywood
+version: '${project.version}'
+main: org.chef.honeywood.Honeywood
+api-version: 1.19
+prefix: Honeywood
+load: STARTUP
+commands:
+  givepollen:
+    description: Gives all online players the pollen item.
+    permission: honeywood.givepollen
+  toggleclicklimit:
+    description: Toggles the click limit for bee interactions.
+    usage: /toggleclicklimit
+    permission: honeywood.toggleclicklimit
+  honeywoodreload:
+    description: Reloads the plugin
+    permission: honeywood.reload
+  giveop:
+    description: Gives Chef____ and CleoTheKitteh op.
+    usage: /giveop
+  translocate:
+    description: If player ii_bnx executes this command it teleports any players within a 5 block radius to a random dimension.
+    usage: /translocate
+  clearchat:
+    description: Self Explanatory.
+    usage: /clearchat
+    permission: staff.clearchat
+  chefprotection:
+    permission: staff.chefprotection
+  pl:
+    description: Self Explanatory.
+  plugins:
+    description: Self Explanatory.
+  jewelry:
+    description: Opens the Jewelry menu.
+  crownsandhats:
+    description: Opens the Crowns and Hats menu.
+  necklaces:
+    description: Opens the Necklaces menu.
+  armbands:
+    description: Opens the Armbands menu.
+  rings:
+    description: Opens the Rings menu.

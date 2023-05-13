@@ -1,0 +1,14 @@
+# Config file for Honeywood plugin
+spawn:
+  world:
+  x:
+  y:
+  z:
+  yaw:
+  pitch:
+
+pollen_chance: 1000
+
+ErrorNotPlayer: '§6§lHoneywood: §cOnly players can use this command.'
+ErrorNoPermission: '§6§lHoneywood: §cYou do not have permission to use this command. §rPlease come retry when you get this permission: '
+ErrorIncorrectUsage: '§6§lHoneywood: §cYou have executed this command wrong, the actual usage is §r§l '
