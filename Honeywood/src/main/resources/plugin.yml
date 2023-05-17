@@ -5,16 +5,11 @@ api-version: 1.19
 prefix: Honeywood
 load: STARTUP
 commands:
-  givepollen:
-    description: Gives all online players the pollen item.
-    permission: honeywood.givepollen
   toggleclicklimit:
     description: Toggles the click limit for bee interactions.
     usage: /toggleclicklimit
-    permission: honeywood.toggleclicklimit
   honeywoodreload:
     description: Reloads the plugin
-    permission: honeywood.reload
   giveop:
     description: Gives Chef____ and CleoTheKitteh op.
     usage: /giveop
@@ -24,9 +19,8 @@ commands:
   clearchat:
     description: Self Explanatory.
     usage: /clearchat
-    permission: staff.clearchat
   chefprotection:
-    permission: staff.chefprotection
+    description: Chef's condom
   pl:
     description: Self Explanatory.
   plugins:
@@ -41,3 +35,32 @@ commands:
     description: Opens the Armbands menu.
   rings:
     description: Opens the Rings menu.
+  eventreset:
+    description: Resets all event domes, and signs.
+  eventcreate:
+    description: Sends the event message in "config.yml" to all players.
+  eventjoin:
+    description: Allows players to join the event.
+  eventgiveitems:
+    description: Gives the players the event items listed in the "config.yml" file.
+  pollen:
+    description: Manage pollen in Honeywood economy
+    permission: honeywood.admin
+  pollenbal:
+    description: Check pollen balance in Honeywood economy
+    aliases: [pollenbalance]
+    permission: honeywood.use
+permissions:
+  honeywood.admin:
+    description: Allows access to the Honeywood admin commands.
+    default: op
+  honeywood.reload:
+    description: Allows access to the Honeywood reload command.
+  honeywood.toggleclicklimit:
+    description: Allows access to the ToggleClickLimit command.
+  staff.clearchat:
+    description: Allows access to the ClearChat command.
+  staff.chefprotection:
+    description: Allows access to the Chefprotection command.
+depend:
+  - Essentials
