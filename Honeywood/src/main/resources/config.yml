@@ -1,14 +1,29 @@
 # Config file for Honeywood plugin
-spawn:
-  world:
-  x:
-  y:
-  z:
-  yaw:
-  pitch:
 
 pollen_chance: 1000
 
 ErrorNotPlayer: '§6§lHoneywood: §cOnly players can use this command.'
 ErrorNoPermission: '§6§lHoneywood: §cYou do not have permission to use this command. §rPlease come retry when you get this permission: '
 ErrorIncorrectUsage: '§6§lHoneywood: §cYou have executed this command wrong, the actual usage is §r§l '
+
+# use \\n to represent a line split.
+event_message: "&6&l----------= Honeywood =----------\\n \\n This is a test to see if the event\\n creator works, edit this message\\n using the commented format above.\\n "
+
+event_resources:
+  - "DIAMOND_ORE:16"
+  - "DIAMOND_BLOCK:16"
+  - "LIGHT:16"
+  - "SHULKER_BOX:16"
+  - "CHEST:16"
+  - "OAK_PLANKS:16"
+  - "OAK_LOGS:16"
+  - "DARK_OAK_PLANKS:16"
+  - "DARK_OAK_LOGS:16"
+  - "BIRCH_PLANKS:16"
+  - "BIRCH_LOGS:16"
+  - "ACACIA_PLANKS:16"
+  - "ACACIA_LOGS:16"
+  - "MANGROVE_PLANKS:16"
+  - "MANGROVE_LOGS:16"
+  - "BEDROCK:16"
+
