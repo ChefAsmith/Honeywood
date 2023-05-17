@@ -1,119 +1,168 @@
 package org.chef.honeywood.pollen;
 
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
-public class Pollen implements Listener {
+import static org.bukkit.Bukkit.getServer;
 
-    private final Random random = new Random();
-    public int pollenChance;
+public class PollenEconomy implements Listener, CommandExecutor {
+    private final Map<String, Integer> pollenMap;
+    private final Random random;
+    private final File dataFile;
+    private final YamlConfiguration dataConfig;
+    private final JavaPlugin plugin;
 
-    private final Material material;
-    private final int chance;
+    public PollenEconomy(JavaPlugin plugin) {
+        this.plugin = plugin;
+        pollenMap = new HashMap<>();
+        random = new Random();
 
-    public Pollen(Material material, int chance) {
-        this.material = material;
-        this.chance = chance;
+        dataFile = new File(plugin.getDataFolder(), "pollen_data.yml");
+        dataConfig = YamlConfiguration.loadConfiguration(dataFile);
+
+        loadPollenData();
+
+        // Schedule automatic data saving every 5 minutes
+        long saveIntervalTicks = 5 * 60 * 20; // 5 minutes in ticks (20 ticks per second)
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                savePollenData();
+            }
+        }.runTaskTimer(plugin, saveIntervalTicks, saveIntervalTicks);
     }
 
-    public Material getMaterial() {
-        return material;
-    }
-
-    public int getChance() {
-        return chance;
-    }
-
-    public void registerCustomItem(JavaPlugin plugin) {
-        // Get the pollen chance from the config.yml file
-        FileConfiguration config = plugin.getConfig();
-        pollenChance = config.getInt("pollen_chance", 1000);
-
-        // Create a new ItemStack for your custom item
-        ItemStack item = new ItemStack(Material.SUNFLOWER);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName("§6§l✴" + "Pollen" + "✴");
-            meta.setCustomModelData(1);
-            item.setItemMeta(meta);
-        }
-
-        // Add the custom item to the game's registry
-        NamespacedKey key = new NamespacedKey(plugin, "pollen");
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        plugin.getLogger().info("Registered custom item: " + key);
-        plugin.getConfig().addDefault("pollen_chance", 1000);
-        plugin.getConfig().options().copyDefaults(true);
-        plugin.saveConfig();
-        pollenChance = plugin.getConfig().getInt("pollen_chance");
-
-    }
-
-    @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        // Check if the entity is a bee
-        if (event.getEntityType() == EntityType.BEE) {
-            // Validate the pollenChance value
-            if (pollenChance <= 0) {
-            } else if (pollenChance <= 1) {
-                // Always drop pollen if pollenChance is less than or equal to 1
-                event.getDrops().add(getPollenItem());
-            } else {
-                // Roll a chance to drop pollen based on the pollenChance value
-                if (random.nextInt(pollenChance) == 0) {
-                    event.getDrops().add(getPollenItem());
-                }
+    public void loadPollenData() {
+        if (dataConfig.contains("pollen")) {
+            ConfigurationSection pollenSection = dataConfig.getConfigurationSection("pollen");
+            for (String playerName : Objects.requireNonNull(pollenSection).getKeys(false)) {
+                int pollenAmount = pollenSection.getInt(playerName);
+                pollenMap.put(playerName, pollenAmount);
             }
         }
     }
 
+    public void savePollenData() {
+        ConfigurationSection pollenSection = dataConfig.createSection("pollen");
+        for (Map.Entry<String, Integer> entry : pollenMap.entrySet()) {
+            pollenSection.set(entry.getKey(), entry.getValue());
+        }
 
+        try {
+            dataConfig.save(dataFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("pollen") || command.getName().equalsIgnoreCase("pollenbal")) {
+            if (args.length == 0) {
+                if (sender instanceof Player player) {
+                    int pollenAmount = getPollenAmount(player);
+                    player.sendMessage(ChatColor.GOLD + ChatColor.BOLD.toString() + "Honeywood: " +
+                            ChatColor.WHITE + "You currently have " + ChatColor.YELLOW + pollenAmount +
+                            " pollen" + ChatColor.WHITE + ", you can use your pollen in the /jewelryshop");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "§6§lHoneywood: §cOnly players can use this command.");
+                }
+                return true;
+            } else if (args.length == 3) {
+                String playerName = args[1];
+                int amount;
+                try {
+                    amount = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(ChatColor.RED + "Invalid amount specified.");
+                    return true;
+                }
+
+                if (args[0].equalsIgnoreCase("give") && sender.hasPermission("honeywood.admin")) {
+                    givePollen(playerName, amount);
+                    sender.sendMessage(ChatColor.GREEN + "Successfully gave " + playerName + " " +
+                            amount + " pollen.");
+                    return true;
+                } else if (args[0].equalsIgnoreCase("take") && sender.hasPermission("honeywood.admin")) {
+                    takePollen(playerName, amount);
+                    sender.sendMessage(ChatColor.GREEN + "Successfully took " + amount +
+                            " pollen from " + playerName + ".");
+                    return true;
+                } else if (args[0].equalsIgnoreCase("set") && sender.hasPermission("honeywood.admin")) {
+                    setPollen(playerName, amount);
+                    sender.sendMessage(ChatColor.GREEN + "Successfully set " + playerName +
+                            "'s pollen to " + amount + ".");
+                    return true;
+                }
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
+                if (sender.hasPermission("honeywood.admin")) {
+                    savePollenData();
+                    sender.sendMessage(ChatColor.GREEN + "Pollen data saved.");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "§6§lHoneywood: §cYou do not have permission to use this command. §rPlease retry when you have this permission: honeywood.admin");
+                }
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "Invalid command format. Usage:");
+                sender.sendMessage(ChatColor.GRAY + "/pollen - View your pollen balance");
+                sender.sendMessage(ChatColor.GRAY + "/pollen give <player> <amount> - Give pollen to a player");
+                sender.sendMessage(ChatColor.GRAY + "/pollen take <player> <amount> - Take pollen from a player");
+                sender.sendMessage(ChatColor.GRAY + "/pollen set <player> <amount> - Set a player's pollen amount");
+                sender.sendMessage(ChatColor.GRAY + "/pollen save - Manually save the pollen data");
+                return true;
+            }
+        }
+        return false;
+    }
 
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        // Check if the entity is a bee
         if (event.getRightClicked().getType() == EntityType.BEE) {
-            // Validate the pollenChance value
-            if (pollenChance <= 0) {
-            } else if (pollenChance <= 1) {
-                // Always drop pollen if pollenChance is less than or equal to 1
-                ItemStack pollen = getPollenItem();
-                pollen.setAmount(1);
-                event.getPlayer().getInventory().addItem(pollen);
-            } else {
-                // Roll a chance to drop pollen based on the pollenChance value
-                if (random.nextInt(pollenChance) == 0) {
-                    ItemStack pollen = getPollenItem();
-                    pollen.setAmount(1);
-                    event.getPlayer().getInventory().addItem(pollen);
-                }
+            if (random.nextInt(100) == 0) {
+                Player player = event.getPlayer();
+                getServer().dispatchCommand(getServer().getConsoleSender(),
+                        "ci give " + player.getName() + " pollenitem");
             }
         }
     }
 
-    public ItemStack getPollenItem() {
-        ItemStack item = new ItemStack(Material.SUNFLOWER);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName("§6§l✴" + "Pollen" + "✴");
-            meta.addEnchant(Enchantment.DURABILITY, 100, true);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            meta.setCustomModelData(2);
-            item.setItemMeta(meta);
-        }
-        return item;
+    // Helper methods for managing pollen amounts
+
+    private int getPollenAmount(Player player) {
+        return pollenMap.getOrDefault(player.getName(), 0);
+    }
+
+    private void givePollen(String playerName, int amount) {
+        int currentAmount = pollenMap.getOrDefault(playerName, 0);
+        pollenMap.put(playerName, currentAmount + amount);
+    }
+
+    private void takePollen(String playerName, int amount) {
+        int currentAmount = pollenMap.getOrDefault(playerName, 0);
+        int newAmount = Math.max(currentAmount - amount, 0);
+        pollenMap.put(playerName, newAmount);
+    }
+
+    private void setPollen(String playerName, int amount) {
+        pollenMap.put(playerName, amount);
     }
 }
